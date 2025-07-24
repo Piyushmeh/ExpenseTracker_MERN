@@ -1,8 +1,13 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
 
-// Dynamically use the base URL
-const BASE_URL = process.env.BASE_URL || "http://localhost:5000/api/v1/";
+
+const BASE_URL = process.env.REACT_APP_BASE_URL || "https://expensetracker-mern-a3tv.onrender.com/api/v1/";
+
+// const BASE_URL = "http://localhost:5000/api/v1/";
+
+console.log("BASE_URL:", BASE_URL);
+console.log("Environment BASE_URL:", process.env.REACT_APP_BASE_URL);
 
 const GlobalContext = React.createContext();
 
@@ -18,6 +23,7 @@ export const GlobalProvider = ({ children }) => {
             getIncomes();
         } catch (err) {
             setError(err.response?.data?.message || "Failed to add income.");
+            console.error("Add Income Error:", err);
         }
     };
 
@@ -25,9 +31,10 @@ export const GlobalProvider = ({ children }) => {
         try {
             const response = await axios.get(`${BASE_URL}get-incomes`);
             setIncomes(response.data);
-            console.log(response.data);
+            console.log("Incomes fetched:", response.data);
         } catch (err) {
             setError("Failed to fetch incomes.");
+            console.error("Get Incomes Error:", err);
         }
     };
 
@@ -37,6 +44,7 @@ export const GlobalProvider = ({ children }) => {
             getIncomes();
         } catch (err) {
             setError("Failed to delete income.");
+            console.error("Delete Income Error:", err);
         }
     };
 
@@ -51,6 +59,7 @@ export const GlobalProvider = ({ children }) => {
             getExpenses();
         } catch (err) {
             setError(err.response?.data?.message || "Failed to add expense.");
+            console.error("Add Expense Error:", err);
         }
     };
 
@@ -58,9 +67,10 @@ export const GlobalProvider = ({ children }) => {
         try {
             const response = await axios.get(`${BASE_URL}get-expenses`);
             setExpenses(response.data);
-            console.log(response.data);
+            console.log("Expenses fetched:", response.data);
         } catch (err) {
             setError("Failed to fetch expenses.");
+            console.error("Get Expenses Error:", err);
         }
     };
 
@@ -70,6 +80,7 @@ export const GlobalProvider = ({ children }) => {
             getExpenses();
         } catch (err) {
             setError("Failed to delete expense.");
+            console.error("Delete Expense Error:", err);
         }
     };
 
