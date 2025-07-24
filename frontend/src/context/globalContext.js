@@ -1,91 +1,90 @@
-import React, { useContext, useState } from "react"
-import axios from 'axios'
+import React, { useContext, useState } from "react";
+import axios from "axios";
 
+// Dynamically use the base URL
+const BASE_URL = process.env.BASE_URL || "http://localhost:5000/api/v1/";
 
-const BASE_URL = "http://localhost:5000/api/v1/";
+const GlobalContext = React.createContext();
 
+export const GlobalProvider = ({ children }) => {
+    const [incomes, setIncomes] = useState([]);
+    const [expenses, setExpenses] = useState([]);
+    const [error, setError] = useState(null);
 
-const GlobalContext = React.createContext()
-
-export const GlobalProvider = ({children}) => {
-
-    const [incomes, setIncomes] = useState([])
-    const [expenses, setExpenses] = useState([])
-    const [error, setError] = useState(null)
-
-    //calculate incomes
+    // Incomes
     const addIncome = async (income) => {
-        const response = await axios.post(`${BASE_URL}add-income`, income)
-            .catch((err) =>{
-                setError(err.response.data.message)
-            })
-        getIncomes()
-    }
+        try {
+            await axios.post(`${BASE_URL}add-income`, income);
+            getIncomes();
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to add income.");
+        }
+    };
 
     const getIncomes = async () => {
-        const response = await axios.get(`${BASE_URL}get-incomes`)
-        setIncomes(response.data)
-        console.log(response.data)
-    }
+        try {
+            const response = await axios.get(`${BASE_URL}get-incomes`);
+            setIncomes(response.data);
+            console.log(response.data);
+        } catch (err) {
+            setError("Failed to fetch incomes.");
+        }
+    };
 
     const deleteIncome = async (id) => {
-        const res  = await axios.delete(`${BASE_URL}delete-income/${id}`)
-        getIncomes()
-    }
+        try {
+            await axios.delete(`${BASE_URL}delete-income/${id}`);
+            getIncomes();
+        } catch (err) {
+            setError("Failed to delete income.");
+        }
+    };
 
     const totalIncome = () => {
-        let totalIncome = 0;
-        incomes.forEach((income) =>{
-            totalIncome = totalIncome + income.amount
-        })
+        return incomes.reduce((acc, income) => acc + income.amount, 0);
+    };
 
-        return totalIncome;
-    }
-
-
-    //calculate incomes
-    const addExpense = async (income) => {
-        const response = await axios.post(`${BASE_URL}add-expense`, income)
-            .catch((err) =>{
-                setError(err.response.data.message)
-            })
-        getExpenses()
-    }
+    // Expenses
+    const addExpense = async (expense) => {
+        try {
+            await axios.post(`${BASE_URL}add-expense`, expense);
+            getExpenses();
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to add expense.");
+        }
+    };
 
     const getExpenses = async () => {
-        const response = await axios.get(`${BASE_URL}get-expenses`)
-        setExpenses(response.data)
-        console.log(response.data)
-    }
+        try {
+            const response = await axios.get(`${BASE_URL}get-expenses`);
+            setExpenses(response.data);
+            console.log(response.data);
+        } catch (err) {
+            setError("Failed to fetch expenses.");
+        }
+    };
 
     const deleteExpense = async (id) => {
-        const res  = await axios.delete(`${BASE_URL}delete-expense/${id}`)
-        getExpenses()
-    }
+        try {
+            await axios.delete(`${BASE_URL}delete-expense/${id}`);
+            getExpenses();
+        } catch (err) {
+            setError("Failed to delete expense.");
+        }
+    };
 
     const totalExpenses = () => {
-        let totalIncome = 0;
-        expenses.forEach((income) =>{
-            totalIncome = totalIncome + income.amount
-        })
+        return expenses.reduce((acc, expense) => acc + expense.amount, 0);
+    };
 
-        return totalIncome;
-    }
-
-
-    const totalBalance = () => {
-        return totalIncome() - totalExpenses()
-    }
+    // Balance and History
+    const totalBalance = () => totalIncome() - totalExpenses();
 
     const transactionHistory = () => {
-        const history = [...incomes, ...expenses]
-        history.sort((a, b) => {
-            return new Date(b.createdAt) - new Date(a.createdAt)
-        })
-
-        return history.slice(0, 3)
-    }
-
+        const history = [...incomes, ...expenses];
+        history.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        return history.slice(0, 3);
+    };
 
     return (
         <GlobalContext.Provider value={{
@@ -106,9 +105,7 @@ export const GlobalProvider = ({children}) => {
         }}>
             {children}
         </GlobalContext.Provider>
-    )
-}
+    );
+};
 
-export const useGlobalContext = () =>{
-    return useContext(GlobalContext)
-}
+export const useGlobalContext = () => useContext(GlobalContext);

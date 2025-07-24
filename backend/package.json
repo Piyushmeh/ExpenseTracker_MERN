@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node app.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +12,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
+    "mern_expencetracker": "file:..",
     "mongoose": "^6.13.8",
     "nodemon": "^2.0.22"
   }
